@@ -63,7 +63,7 @@ def data_format(place_id,keyword, addr, lat, lng, name, comment, rate, date,loca
 
 
 # --------------------망고플레이트 크롤링----------------------
-def mango_plate_crawling(keyword):
+def mango_plate_crawling(keyword, last):
     global driver_path, server_ip
     conn = pymongo.MongoClient(server_ip, 27017)
     db = conn.crawling
@@ -110,7 +110,7 @@ def mango_plate_crawling(keyword):
                     rate = 1.0
                 except NoSuchElementException:
                     pass
-                db.reviews.insert_one(data_format(place_id,r_name, addr, lat, lng, name, comment, rate, date,keyword))
+                db.mango_plate.insert_one(data_format(place_id,r_name, addr, lat, lng, name, comment, rate, date,keyword))
         curr_page += 1
         if curr_page == 2:
             break

@@ -117,4 +117,3 @@ def instagram_crawling(keyword):
 
 
 # ------------------ 테스트 부분 ----------------------------
-instagram_crawling(keyword)

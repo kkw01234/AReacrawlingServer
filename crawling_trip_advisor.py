@@ -1,6 +1,6 @@
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
-import datetime
+from datetime import datetime
 import requests
 import re
 import time
@@ -63,7 +63,7 @@ def data_format(place_id, keyword, addr, lat, lng, name, comment, rate, date, lo
 
 
 # --------------------트립어드바이저 코드 크롤링----------------------
-def trip_advisor_crawling(keyword):
+def trip_advisor_crawling(keyword, last):
     global driver_path, server_ip
     conn = pymongo.MongoClient(server_ip, 27017)
     db = conn.crawling
@@ -125,8 +125,12 @@ def trip_advisor_crawling(keyword):
                 info = review.find_element_by_class_name('info_text')
                 name = info.find_element_by_tag_name('div').text
                 date = review.find_element_by_class_name('ratingDate').get_attribute('title')
-                date = datetime.datetime.strptime(date, '%Y년 %m월 %d일')
-                date = date.strftime('%Y-%m-%d')
+                try:
+                    date = datetime.strptime(date, '%Y년 %m월 %d일')
+                    date = date.strftime('%Y-%m-%d')
+                except: # 날짜가 등록되있지 않은 경우가 있음 (크롤링한 날짜로 설정)
+                    date = datetime.today().strftime('%Y-%m-%d')
+
                 comment = review.find_element_by_class_name('noQuotes').text + ' '
                 comment += review.find_element_by_class_name('partial_entry').text
                 rate = float(review.find_element_by_class_name('ui_bubble_rating').get_attribute('class')[-2:-1])

@@ -63,7 +63,7 @@ def data_format(place_id, keyword, addr, lat, lng, name, comment, rate, date,loc
 
 
 # --------------------다이닝 코드 크롤링----------------------
-def dining_code_crawling(keyword):
+def dining_code_crawling(keyword, last):
     global driver_path, server_ip
     conn = pymongo.MongoClient(server_ip, 27017)
     db = conn.crawling
@@ -126,4 +126,4 @@ def dining_code_crawling(keyword):
             comment = review.find_element_by_class_name('review_contents').text
             star = review.find_element_by_class_name('star').find_element_by_tag_name('i').get_attribute('style')
             rate = int(star[7:-2]) / 20
-            db.reviews.insert_one(data_format(place_id, r_name, addr, lat, lng, name, comment, rate, date,keyword))
+            db.dining_code.insert_one(data_format(place_id, r_name, addr, lat, lng, name, comment, rate, date, keyword))
