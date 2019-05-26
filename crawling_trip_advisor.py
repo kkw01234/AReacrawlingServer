@@ -63,6 +63,7 @@ def data_format(place_id, keyword, addr, lat, lng, name, comment, rate, date, lo
 
 
 # --------------------트립어드바이저 코드 크롤링----------------------
+# keyword : 크롤링할 지역 값, last : 그 전 마지막 날짜
 def trip_advisor_crawling(keyword, last):
     global driver_path, server_ip
     conn = pymongo.MongoClient(server_ip, 27017)
@@ -139,7 +140,8 @@ def trip_advisor_crawling(keyword, last):
                 print('date :', date)
                 print('comment :', comment)
                 print('rate :', rate)
-                db.trips.insert_one(data_format(id, r_name, addr, lat, lng, name, comment, rate, date, keyword))
+                if datetime.strptime(date, "%Y-%m-%d").date() > last:
+                    db.trips.insert_one(data_format(id, r_name, addr, lat, lng, name, comment, rate, date, keyword))
             try:  # 리뷰의 다음 페이지가 있다면 다음 버튼 눌러주기
                 next_button = driver.find_element_by_id('REVIEWS').find_element_by_class_name('next')
                 if 'disabled' in next_button.get_attribute('class'):

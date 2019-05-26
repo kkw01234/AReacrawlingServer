@@ -3,6 +3,7 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import ElementNotVisibleException
 import requests
 import time
+from datetime import datetime
 import pymongo
 from bs4 import BeautifulSoup
 
@@ -63,6 +64,7 @@ def data_format(place_id,keyword, addr, lat, lng, name, comment, rate, date,loca
 
 
 # --------------------망고플레이트 크롤링----------------------
+# keyword : 크롤링할 지역 값, last : 그 전 마지막 날짜
 def mango_plate_crawling(keyword, last):
     global driver_path, server_ip
     conn = pymongo.MongoClient(server_ip, 27017)
@@ -110,7 +112,8 @@ def mango_plate_crawling(keyword, last):
                     rate = 1.0
                 except NoSuchElementException:
                     pass
-                db.mango_plate.insert_one(data_format(place_id,r_name, addr, lat, lng, name, comment, rate, date,keyword))
+                if datetime.strptime(date, "%Y-%m-%d").date() > last:
+                    db.mango_plate.insert_one(data_format(place_id,r_name, addr, lat, lng, name, comment, rate, date,keyword))
         curr_page += 1
         if curr_page == 2:
             break

@@ -35,14 +35,12 @@ def get_r_info(keyword):
                 print(addr[i])
                 ans = i
                 break
-
-
         print('place_id :', place_id[ans].get_text())
         print('address :', addr[ans].get_text())
         print('lat :', float(lat[ans].get_text()))
         print('lng :', float(lng[ans].get_text()))
     except:
-        return 'None','None', 'None', 'None'
+        return 'None', 'None', 'None', 'None'
     return place_id[ans].get_text(), addr[ans].get_text(), float(lat[ans].get_text()), float(lng[ans].get_text())
 
 
@@ -58,11 +56,12 @@ def data_format(place_id, keyword, addr, lat, lng, name, comment, rate, date,loc
         'comment': comment,
         'rate': rate,
         'date': date,
-        'location' : location
+        'location': location
     }
 
 
 # --------------------다이닝 코드 크롤링----------------------
+# keyword : 크롤링할 지역 값, last : 그 전 마지막 날짜
 def dining_code_crawling(keyword, last):
     global driver_path, server_ip
     conn = pymongo.MongoClient(server_ip, 27017)
@@ -126,4 +125,5 @@ def dining_code_crawling(keyword, last):
             comment = review.find_element_by_class_name('review_contents').text
             star = review.find_element_by_class_name('star').find_element_by_tag_name('i').get_attribute('style')
             rate = int(star[7:-2]) / 20
-            db.dining_code.insert_one(data_format(place_id, r_name, addr, lat, lng, name, comment, rate, date, keyword))
+            if datetime.strptime(date, "%Y-%m-%d").date() > last:
+                db.dining_code.insert_one(data_format(place_id, r_name, addr, lat, lng, name, comment, rate, date, keyword))

@@ -11,7 +11,8 @@ app = Flask(__name__)
 app.secret_key = 'HZt,}`v{&pwv&,qvtSV8Z9NE!z,p=e?('
 
 
-#인스타그램 크롤링
+# 인스타그램 크롤링
+# key 임의의 키값 name : 크롤링할 지역이름
 @app.route("/instagram_crawling")
 def start_crawling():
     key = request.form['key']
@@ -25,12 +26,12 @@ def start_crawling():
             jsonify({"result": "key Error"})
     except:
         traceback.print_exc()
-        return jsonify({"result": traceback})
+        return jsonify({"result": "fail"})
     return jsonify({"result": "success"})
 
 
-#지역검색(망고플레이트, 다이닝코드, 트립 어드바이저)
-#오류났을경우 크롤링한 데이터 삭저....????
+# 지역검색(망고플레이트, 다이닝코드, 트립 어드바이저)
+# 오류났을경우 크롤링한 데이터 삭제....????
 @app.route("/location_crawling", methods=['GET'])
 def location_crawling():
     key = request.args.get('key')
@@ -45,10 +46,10 @@ def location_crawling():
                 trip_advisor_crawling(crawl, last)
                 sql(crawl)
         else:
-            return jsonify({"result" : "Key Error"})
+            return jsonify({"result": "Key Error"})
     except:
         traceback.print_exc()
-        return jsonify({"result": traceback})
+        return jsonify({"result": "fail"})
 
 
 def last_crawling(keyword):
