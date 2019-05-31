@@ -6,24 +6,25 @@ from flask import Flask, request,jsonify
 import traceback
 import pymysql
 from datetime import datetime
+from restaurant_crawling import restaurant_mango_plate, restaurant_trip_advisor, restaurant_instagram, restaurant_dining_code, restaurant_common
 
 app = Flask(__name__)
 app.secret_key = 'HZt,}`v{&pwv&,qvtSV8Z9NE!z,p=e?('
-
+private_key = '123456'
 
 # 인스타그램 크롤링
 # key 임의의 키값 name : 크롤링할 지역이름
-@app.route("/instagram_crawling")
+@app.route("/instagram_crawling", methods=['GET'])
 def start_crawling():
-    key = request.form['key']
-    name = request.form['name']
+    key = request.args.get('key')
+    name = request.args.get('keyword')
     try:
-        if key == '123456':
+        if key == private_key:
             crawling_list = [name]
             for crawl in crawling_list:
                 instagram_crawling(crawl)
         else:
-            jsonify({"result": "key Error"})
+            return jsonify({"result": "key Error"})
     except:
         traceback.print_exc()
         return jsonify({"result": "fail"})
@@ -37,7 +38,7 @@ def location_crawling():
     key = request.args.get('key')
     keyword = request.args.get('keyword')
     try:
-        if key == '123456':
+        if key == private_key:
             crawling_list = [keyword]
             for crawl in crawling_list:
                 last = last_crawling(crawl)
@@ -52,6 +53,26 @@ def location_crawling():
         return jsonify({"result": "fail"})
 
 
+@app.route("/restaurant_crawling", methods=['GET'])
+def restaurant_crawling():
+    key = request.args.get('key')
+    place_id = request.args.get('place_id')
+    try:
+        if key == private_key:
+            #last = restaurant_common.find_last_crawling_date(place_id)
+            #restaurant_dining_code.dining_code_crawling(place_id, last)
+            #restaurant_mango_plate.mango_plate_crawling(place_id, last)
+            #restaurant_instagram.instagram_crawling(place_id, last)
+            #restaurant_trip_advisor.trip_advisor_crawling(place_id, last)
+            restaurant_common.update_last(place_id)
+            return jsonify({'result': place_id+' finish crawling'})
+        else:
+            return jsonify({'result': 'KEY ERROR'})
+    except:
+        traceback.print_exc()
+        return jsonify({'result': 'Error'})
+
+
 def last_crawling(keyword):
     conn = pymysql.connect(host='118.220.3.71', user='root', password='rjsdnrkkw4809!!', db='area', charset='utf8')
     curs = conn.cursor()
@@ -60,10 +81,11 @@ def last_crawling(keyword):
     rows = curs.fetchall()
     if len(rows) >=1:
         for row in rows:
+            print(row[0])
             return row[0]
     else:
         date = '1900-01-01'
-        return datetime.strptime(date, '%Y-%m-%d')
+        return datetime.strptime(date, '%Y-%m-%d').date()
 
 
 def sql(keyword):

@@ -3,9 +3,10 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import ElementNotVisibleException
 import requests
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
 import pymongo
 from bs4 import BeautifulSoup
+
 
 # ------------------하이퍼 파라미터---------------------------
 local = '강남'  # 검색 지역 단어
@@ -86,34 +87,41 @@ def mango_plate_crawling(keyword, last):
             driver.get(r_id)
             r_name = driver.find_element_by_class_name('restaurant_name').text
             place_id, addr, lat, lng = get_r_info(r_name)
+            i=0
             while True:
+                print(str(i))
+                i+=1
                 try:
-                    driver.find_element_by_class_name('btn-reivews-more').click()  # 리뷰 더보기 계속 누르기
-                    time.sleep(1)
+                    driver.find_element_by_class_name('RestaurantReviewList__MoreReviewButton').click()  # 리뷰 더보기 계속 누르기
+                    time.sleep(2)
                 except:
                     break
-            reviews = driver.find_elements_by_class_name('review-item')
+            reviews = driver.find_elements_by_class_name('RestaurantReviewList__ReviewItem')
             for review in reviews:
-                name = review.find_element_by_tag_name('figcaption').text
-                date = review.find_element_by_class_name('past-time').text
-                comment = review.find_element_by_class_name('review_content').text
+                name = review.find_element_by_class_name('RestaurantReviewItem__UserNickName').text
+                date = review.find_element_by_class_name('RestaurantReviewItem__ReviewDate').text
                 try:
-                    review.find_element_by_class_name('good')
+                    date = datetime.strptime(date, "%Y-%m-%d").date()
+                except: # 2 일 전으로 되있는 경우
+                    if '일' in date:
+                        now = datetime.now()
+                        differ = int(date.split('일')[0])
+                        now -= timedelta(days=differ)
+                        date = now.date()
+                comment = review.find_element_by_class_name('RestaurantReviewItem__ReviewContent').text
+                rate_text = review.find_element_by_class_name('RestaurantReviewItem__RatingText').text
+                if rate_text == '맛있다':
                     rate = 5.0
-                except NoSuchElementException:
-                    pass
-                try:
-                    review.find_element_by_class_name('ok')
+                elif rate_text == '괜찮다':
                     rate = 3.0
-                except NoSuchElementException:
-                    pass
-                try:
-                    review.find_element_by_class_name('bad')
+                elif rate_text == '별로':
                     rate = 1.0
-                except NoSuchElementException:
-                    pass
-                if datetime.strptime(date, "%Y-%m-%d").date() > last:
-                    db.mango_plate.insert_one(data_format(place_id,r_name, addr, lat, lng, name, comment, rate, date,keyword))
+                else: #에러났을경우 그냥 보통 점수로 계산
+                    rate = 2.5
+                print(date > last)
+                if date > last:
+                    date = date.strftime('%Y-%m-%d'.encode('unicode-escape').decode()).encode().decode('unicode-escape')
+                    db.mango_plate.insert_one(data_format(place_id, r_name, addr, lat, lng, name, comment, rate, date, keyword))
         curr_page += 1
         if curr_page == 2:
             break
