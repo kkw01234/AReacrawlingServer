@@ -1,6 +1,7 @@
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 import datetime
+
 import requests
 import time
 import pymongo
@@ -103,7 +104,7 @@ def dining_code_crawling(keyword, last):
             except:
                 break
         try:
-            reviews = driver.find_element_by_id('div_review').find_elements_by_class_name('latter-graph')
+            reviews = driver.find_element_by_id('div_review_back').find_elements_by_class_name('latter-graph')
         except:
             continue
         for review in reviews:
@@ -125,5 +126,6 @@ def dining_code_crawling(keyword, last):
             comment = review.find_element_by_class_name('review_contents').text
             star = review.find_element_by_class_name('star').find_element_by_tag_name('i').get_attribute('style')
             rate = int(star[7:-2]) / 20
-            if datetime.strptime(date, "%Y-%m-%d").date() > last:
+            if datetime.datetime.strptime(date, "%Y-%m-%d").date() > last:
                 db.dining_code.insert_one(data_format(place_id, r_name, addr, lat, lng, name, comment, rate, date, keyword))
+
