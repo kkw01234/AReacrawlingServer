@@ -5,6 +5,7 @@ import requests
 import time
 import pymongo
 import pymysql
+import traceback
 from bs4 import BeautifulSoup
 from restaurant_crawling import restaurant_common
 
@@ -25,19 +26,30 @@ def dining_code_crawling(place_id, last):
     driver = webdriver.Chrome(driver_path)
     driver.implicitly_wait(3)
     driver.get('https://www.diningcode.com/list.php?query=' + r_name+'&rn=1')
-    lis = driver.find_element_by_id('div_list')
-    a_href = lis.find_elements_by_tag_name('a')
+    lis2 = driver.find_element_by_id('div_list')
+    last_li = 0
 
-    jMap = driver.execute_script('return jMap')
+
+    a_href = lis2.find_elements_by_tag_name('a')
+    j_map = driver.execute_script('return jMap')
     count = 0
-    for m in jMap:
+    for a in a_href:
+        print(a.get_attribute('href'))
+
+    print("gjlkfjgklsfjsdklfjsdklfj")
+    print(len(j_map))
+    print(j_map)
+    for m in j_map:
+        print(a_href[count+2].get_attribute('href'))
         lat = round(float(m['lat']), 3)
         lng = round(float(m['lng']), 3)
         print(str(lat)+' '+str(lng)+' '+str(round(r_lat, 3))+' '+str(round(r_lng, 3)))
         if round(r_lat, 3) == lat and round(r_lng, 3) == lng:
             break
         count += 1
-    li = a_href[count+2]
+    print(count + 2)
+    li = a_href[count+2]  # 0 ,1 광고글이 크롤링됨
+
 
     # for i, a in zip(range(0, len(a_href)), a_href):
     #   print(str(i)+': '+a.get_attribute('href'))
@@ -47,15 +59,21 @@ def dining_code_crawling(place_id, last):
     driver.get(li.get_attribute('href'))
 
     time.sleep(2)
-    menu_info = driver.find_element_by_class_name('menu-info')
-    menu_info.find_element_by_class_name('more-btn').click()
-    menu_list = menu_info.find_element_by_class_name('list') #메뉴 저장
-    menu_li = menu_list.find_elements_by_tag_name('li')
-    menu = ''
-    for l in menu_li:
-        menu += str(l.find_element_by_class_name('l-txt').text)+" "+str(l.find_element_by_class_name('r-txt').text)+'\n'
-    print(menu)
-    find =False
+    try:
+        menu_info = driver.find_element_by_class_name('menu-info')
+        menu_info.find_element_by_class_name('more-btn').click()
+        menu_list = menu_info.find_element_by_class_name('list') #메뉴 저장
+
+        menu_li = menu_list.find_elements_by_tag_name('li')
+        menu = ''
+        for l in menu_li:
+            menu += str(l.find_element_by_class_name('l-txt').text)+" "+str(l.find_element_by_class_name('r-txt').text)+'\n'
+        print(menu)
+        restaurant_common.update_text(place_id, menu)
+    except:
+        traceback.print_exc()
+        pass
+    find = False
     while True:
         try:
             driver.find_element_by_id('div_more_review').click()
@@ -63,10 +81,10 @@ def dining_code_crawling(place_id, last):
             break
     try:
         reviews = driver.find_element_by_id('div_review').find_elements_by_class_name('latter-graph')
-        find = True
     except:
         return
     for review in reviews:
+        find = True
         name = review.find_element_by_class_name('person-grade').find_element_by_class_name('btxt').find_element_by_tag_name('strong').text
         comment = review.find_element_by_class_name('review_contents').text
         star = review.find_element_by_class_name('star').find_element_by_tag_name('i').get_attribute('style')
@@ -86,7 +104,7 @@ def dining_code_crawling(place_id, last):
             date = datetime.datetime.strptime(date, '%m월 %d일')
             date = str(now.year) + '-' + date.strftime('%m-%d')
 
-        restaurant_common.update_text(place_id, menu)
+
         if datetime.datetime.strptime(date, "%Y-%m-%d").date() > last:
             db.rest_dining_code.insert_one(restaurant_common.data_format(place_id, r_name, r_addr, r_lat, r_lng, name, comment, rate, date, place_id))
     if find:

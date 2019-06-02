@@ -30,6 +30,9 @@ def get_location(keyword, r_lat, r_lng):
         t = str(search_first_result_json).strip().replace('&quot;','"')
         t2 = json.loads(t)
         count = -1
+        if t2 == []:
+            break
+
         for a,i in zip(t2, range(0,len(t2))):
             m_lat = round(float(a['restaurant']['latitude']), 3)
             m_lng = round(float(a['restaurant']['longitude']), 3)
@@ -57,6 +60,8 @@ def mango_plate_crawling(place_id, last):
     driver.implicitly_wait(3)
     r_name, r_addr, r_lat, r_lng = restaurant_common.get_r_info(place_id)
     count = get_location(r_name, r_lat, r_lng)
+    if count == -1:
+        return
     driver.get('https://www.mangoplate.com/search/' + r_name)  # 첫 팝업창 끄기
     driver.get('https://www.mangoplate.com/search/' + r_name)  # 첫 팝업창 끄기
     time.sleep(3)
@@ -86,6 +91,8 @@ def mango_plate_crawling(place_id, last):
                 differ = int(date.split('일')[0])
                 now -= timedelta(days=differ)
                 date = now.date()
+            else:
+                date = datetime.now().date()
         comment = review.find_element_by_class_name('RestaurantReviewItem__ReviewContent').text
         rate_text = review.find_element_by_class_name('RestaurantReviewItem__RatingText').text
         if rate_text == '맛있다':
@@ -96,7 +103,6 @@ def mango_plate_crawling(place_id, last):
             rate = 1.0
         else:  # 에러났을경우 그냥 보통 점수로 계산
             rate = 2.5
-        print(date > last)
         if date > last:
             date = date.strftime('%Y-%m-%d'.encode('unicode-escape').decode()).encode().decode('unicode-escape')
             db.rest_mango_plate.insert_one(restaurant_common.data_format(place_id, r_name, r_addr, r_lat, r_lng, name, comment, rate, date, place_id))
