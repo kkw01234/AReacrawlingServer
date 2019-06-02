@@ -51,26 +51,36 @@ def location_crawling():
     except:
         traceback.print_exc()
         return jsonify({"result": "fail"})
-
-
+import queue
+crawling_list = queue.Queue()
+lock = False
 @app.route("/restaurant_crawling", methods=['GET'])
 def restaurant_crawling():
+    global lock, crawling_list
     key = request.args.get('key')
+    print(key)
+    if key != private_key:
+        return jsonify({'result': 'KEY ERROR'})
     place_id = request.args.get('place_id')
+    print(place_id)
+    while True:
+        if lock is False:
+            break
+    lock = True
     try:
-        if key == private_key:
-            #last = restaurant_common.find_last_crawling_date(place_id)
-            #restaurant_dining_code.dining_code_crawling(place_id, last)
-            #restaurant_mango_plate.mango_plate_crawling(place_id, last)
-            #restaurant_instagram.instagram_crawling(place_id, last)
-            #restaurant_trip_advisor.trip_advisor_crawling(place_id, last)
-            restaurant_common.update_last(place_id)
-            return jsonify({'result': place_id+' finish crawling'})
-        else:
-            return jsonify({'result': 'KEY ERROR'})
+        last = restaurant_common.find_last_crawling_date(place_id)
+        restaurant_dining_code.dining_code_crawling(place_id, last)
+        restaurant_mango_plate.mango_plate_crawling(place_id, last)
+        restaurant_instagram.instagram_crawling(place_id, last)
+        restaurant_trip_advisor.trip_advisor_crawling(place_id, last)
+        restaurant_common.update_last(place_id)
+        lock = False
+        return jsonify({'result': place_id+' finish crawling'})
     except:
         traceback.print_exc()
+        lock = False
         return jsonify({'result': 'Error'})
+
 
 
 def last_crawling(keyword):

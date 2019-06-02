@@ -62,7 +62,7 @@ def find_last_crawling_date(place_id):
             if row[0] is None:
                 return datetime.datetime.today().replace(year=1900, month=1, day=1).date()
             else:
-                return row[0]
+                return datetime.datetime.strptime(row[0], "%Y-%m-%d").date()
 
 
 # -------------크롤링 마칠 때 -------------

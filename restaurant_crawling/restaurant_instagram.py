@@ -77,8 +77,12 @@ def instagram_crawling(place_id, last):
         if two == 2 and round(lat, 2) == r_lat and round(lng, 2) == r_lng:
             # 크롤링시작!!
             find = True
-            searches = driver.find_element_by_class_name('_9AhH0')  # 사진들
-            searches.click()
+            try:
+                searches = driver.find_element_by_class_name('_9AhH0')  # 사진들
+                searches.click()
+            except:
+                driver.close()
+                break
             while True:
                 time.sleep(2)
                 try:
