@@ -105,8 +105,8 @@ def instagram_crawling(place_id, last):
         if find:
             print('find')
             driver.close()
-            break
-
+            return
+    driver.close()
 
 
 

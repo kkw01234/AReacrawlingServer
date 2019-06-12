@@ -36,30 +36,29 @@ def dining_code_crawling(place_id, last):
     for a in a_href:
         print(a.get_attribute('href'))
 
-    print("gjlkfjgklsfjsdklfjsdklfj")
     print(len(j_map))
     print(j_map)
     for m in j_map:
         print(a_href[count+2].get_attribute('href'))
-        lat = round(float(m['lat']), 3)
-        lng = round(float(m['lng']), 3)
-        print(str(lat)+' '+str(lng)+' '+str(round(r_lat, 3))+' '+str(round(r_lng, 3)))
-        if round(r_lat, 3) == lat and round(r_lng, 3) == lng:
+        lat = round(float(m['lat']), 2)
+        lng = round(float(m['lng']), 2)
+        if round(r_lat, 2) == lat and round(r_lng, 2) == lng:
             break
         count += 1
     print(count + 2)
-    li = a_href[count+2]  # 0 ,1 광고글이 크롤링됨
+    try:
+        li = a_href[count+2]  # 0 ,1 광고글이 크롤링됨
 
 
     # for i, a in zip(range(0, len(a_href)), a_href):
     #   print(str(i)+': '+a.get_attribute('href'))
 
-    print(li.get_attribute('href'))
+        print(li.get_attribute('href'))
 
-    driver.get(li.get_attribute('href'))
+        driver.get(li.get_attribute('href'))
 
-    time.sleep(2)
-    try:
+        time.sleep(2)
+
         menu_info = driver.find_element_by_class_name('menu-info')
         menu_info.find_element_by_class_name('more-btn').click()
         menu_list = menu_info.find_element_by_class_name('list') #메뉴 저장
@@ -109,6 +108,9 @@ def dining_code_crawling(place_id, last):
             db.rest_dining_code.insert_one(restaurant_common.data_format(place_id, r_name, r_addr, r_lat, r_lng, name, comment, rate, date, place_id))
     if find:
         driver.close()
+        return
+    driver.close()
+
 
 # -----------Test------------
 if __name__ =="__main__":

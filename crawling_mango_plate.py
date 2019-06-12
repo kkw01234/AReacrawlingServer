@@ -126,3 +126,6 @@ def mango_plate_crawling(keyword, last):
         if curr_page == 2:
             break
 
+
+if __name__=='__main__':
+    mango_plate_crawling('', datetime.now().replace(year=1950,month=1,day=1).date())
