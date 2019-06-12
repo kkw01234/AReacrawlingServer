@@ -31,11 +31,20 @@ def trip_advisor_crawling(place_id, last):
         time.sleep(1)  # 검색 및 기다리기
         driver.find_element_by_id('GEO_SCOPED_SEARCH_INPUT').clear()
         time.sleep(2)  # 검색 및 기다리기
-        driver.find_element_by_id('GEO_SCOPED_SEARCH_INPUT').send_keys('대한민국, 아시아')
+        driver.find_element_by_id('GEO_SCOPED_SEARCH_INPUT').send_keys('대한민국')
         time.sleep(2)  # 검색 및 기다리기
+        try:
+            driver.find_element_by_class_name('overlays-pieces-CloseX__close--7erra').click()
+        except:
+            pass
+        time.sleep(1)
         driver.find_element_by_id('SEARCH_BUTTON').click()
         time.sleep(2)  # 검색 및 기다리기
     load_chrome()
+    try:
+        driver.find_element_by_class_name('overlays-pieces-CloseX__close--7erra').click()
+    except:
+        pass
     rests = []
     p = re.compile('/Restaurant_Review.+html')
     i = 0
@@ -56,7 +65,7 @@ def trip_advisor_crawling(place_id, last):
                 result = p.findall(script)
                 print('why!!!'+str(ss))
                 rests.append('https://www.tripadvisor.co.kr/' + result[0])
-        if count > 2:
+        if count > 0:
             break
         try: #다음 버튼이 없을 경우
             next_button = driver.find_element_by_class_name('next')
@@ -91,7 +100,6 @@ def trip_advisor_crawling(place_id, last):
         if round(r_lat, 2) == round(rest_lat, 2) and round(rest_lng, 2) == round(r_lng, 2):
             print('find')
             find = True
-            r_name = driver.find_element_by_class_name('ui_header').text
             while True:  # 리뷰들의 페이지를 모두 탐색하기 위한 반복문
                 time.sleep(2)
                 try:
@@ -120,7 +128,8 @@ def trip_advisor_crawling(place_id, last):
                     print('comment :', comment)
                     print('rate :', rate)
                     if datetime.strptime(date, "%Y-%m-%d").date() > last:
-                        db.rest_trip_advisor.insert_one(restaurant_common.data_format(id, rest_name, rest_addr, rest_lat, rest_lng, name, comment, rate, date, place_id))
+                        date = date.encode().decode('unicode-escape')
+                        db.rest_trip_advisor.insert_one(restaurant_common.data_format(place_id, rest_name, rest_addr, rest_lat, rest_lng, name, comment, rate, date, place_id))
                 try:  # 리뷰의 다음 페이지가 있다면 다음 버튼 눌러주기
                     next_button = driver.find_element_by_id('REVIEWS').find_element_by_class_name('next')
                     if 'disabled' in next_button.get_attribute('class'):
@@ -130,9 +139,11 @@ def trip_advisor_crawling(place_id, last):
                     break
         if find:
             driver.close()
-            break
+            return
+
+    driver.close()
 
 
 # -----------TEST----------------------------
 if __name__ == '__main__':
-    trip_advisor_crawling('ChIJ7bKnOIiifDURVkqxTJFicrY', None)
+    trip_advisor_crawling('ChIJ6e_m97RbezURqzLRyOMWO3M', datetime.now().replace(year=1900,month=1,day=1).date())

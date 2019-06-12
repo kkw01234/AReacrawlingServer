@@ -153,4 +153,4 @@ def trip_advisor_crawling(keyword, last):
 
 # -----------TEST----------------------------
 if __name__ == '__main__':
-    trip_advisor_crawling(local)
+    trip_advisor_crawling(local,datetime.now().replace(year=1950, month=1, day=1).date())

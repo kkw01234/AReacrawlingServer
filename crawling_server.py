@@ -7,10 +7,11 @@ import traceback
 import pymysql
 from datetime import datetime
 from restaurant_crawling import restaurant_mango_plate, restaurant_trip_advisor, restaurant_instagram, restaurant_dining_code, restaurant_common
+import requests
 
 app = Flask(__name__)
 app.secret_key = 'HZt,}`v{&pwv&,qvtSV8Z9NE!z,p=e?('
-private_key = '123456'
+private_key = '95apduobleerstcy97'
 
 # 인스타그램 크롤링
 # key 임의의 키값 name : 크롤링할 지역이름
@@ -51,22 +52,29 @@ def location_crawling():
     except:
         traceback.print_exc()
         return jsonify({"result": "fail"})
+
+
 import queue
-crawling_list = queue.Queue()
+crawling_lists = set()
 lock = False
+last_one = ''
 @app.route("/restaurant_crawling", methods=['GET'])
 def restaurant_crawling():
-    global lock, crawling_list
+    global lock, crawling_lists, last_one
     key = request.args.get('key')
     print(key)
     if key != private_key:
         return jsonify({'result': 'KEY ERROR'})
-    place_id = request.args.get('place_id')
-    print(place_id)
+    place_id2 = request.args.get('place_id')
+    crawling_lists.add(place_id2)
+    print(place_id2)
     while True:
         if lock is False:
             break
     lock = True
+    li = list(crawling_lists)
+    place_id = li[0]
+    print(crawling_lists)
     try:
         last = restaurant_common.find_last_crawling_date(place_id)
         restaurant_dining_code.dining_code_crawling(place_id, last)
@@ -74,12 +82,18 @@ def restaurant_crawling():
         restaurant_instagram.instagram_crawling(place_id, last)
         restaurant_trip_advisor.trip_advisor_crawling(place_id, last)
         restaurant_common.update_last(place_id)
+        crawling_lists.remove(place_id)
         lock = False
-        return jsonify({'result': place_id+' finish crawling'})
     except:
         traceback.print_exc()
         lock = False
         return jsonify({'result': 'Error'})
+    try:
+        result = requests.get(url='http://118.220.3.71:14565/big_data?key=95apduobleerstcy97&place_id=' + place_id)
+    except:
+        result = 'big-data not complete'
+        pass
+    return jsonify({'result': place_id + ' finish crawling'})
 
 
 
@@ -119,6 +133,7 @@ def sql(keyword):
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=15565)
+
 
 
 

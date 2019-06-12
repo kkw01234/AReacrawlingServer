@@ -62,11 +62,12 @@ def find_last_crawling_date(place_id):
             if row[0] is None:
                 return datetime.datetime.today().replace(year=1900, month=1, day=1).date()
             else:
-                return datetime.datetime.strptime(row[0], "%Y-%m-%d").date()
+                return row[0]
 
 
 # -------------크롤링 마칠 때 -------------
 def update_last(place_id):
+    print('start')
     conn = pymysql.connect(host='118.220.3.71', user='root', password='rjsdnrkkw4809!!', db='area', charset='utf8')
     curs = conn.cursor()
     date = datetime.datetime.now().strftime('%Y-%m-%d')

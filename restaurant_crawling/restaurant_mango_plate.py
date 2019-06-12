@@ -34,10 +34,10 @@ def get_location(keyword, r_lat, r_lng):
             break
 
         for a,i in zip(t2, range(0,len(t2))):
-            m_lat = round(float(a['restaurant']['latitude']), 3)
-            m_lng = round(float(a['restaurant']['longitude']), 3)
+            m_lat = round(float(a['restaurant']['latitude']), 2)
+            m_lng = round(float(a['restaurant']['longitude']), 2)
             print(str(r_lat)+" "+str(m_lat)+" "+str(r_lat)+" "+str(r_lng))
-            if round(r_lat, 3) == m_lat and round(r_lng, 3) == m_lng:
+            if round(r_lat, 2) == m_lat and round(r_lng, 2) == m_lng:
                 count = i
                 break
         print(count)
@@ -113,4 +113,4 @@ def mango_plate_crawling(place_id, last):
 if __name__ =="__main__":
     place_id1='ChIJL4SLNNCYfDURoDGLm1cbBRM'
     #last 코드 필요
-    mango_plate_crawling(place_id=place_id1, last=None)
+    mango_plate_crawling(place_id=place_id1, last=datetime.now().replace(year=1900,month=1,day=1).date())

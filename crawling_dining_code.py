@@ -129,3 +129,5 @@ def dining_code_crawling(keyword, last):
             if datetime.datetime.strptime(date, "%Y-%m-%d").date() > last:
                 db.dining_code.insert_one(data_format(place_id, r_name, addr, lat, lng, name, comment, rate, date, keyword))
 
+if __name__=='__main__':
+    dining_code_crawling('', datetime.now().replace(year=1950, month=1, day=1).date())
