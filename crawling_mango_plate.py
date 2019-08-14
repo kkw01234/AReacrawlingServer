@@ -128,4 +128,8 @@ def mango_plate_crawling(keyword, last):
 
 
 if __name__=='__main__':
+<<<<<<< HEAD
     mango_plate_crawling('경기대학교', datetime.now().replace(year=1950,month=1,day=1).date())
+=======
+    mango_plate_crawling('', datetime.now().replace(year=1950,month=1,day=1).date())
+>>>>>>> 3da96042024c2355bcfc990a7de2ea5fd204b124

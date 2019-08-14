@@ -4,7 +4,11 @@ import datetime
 import traceback
 
 
+<<<<<<< HEAD
 key = 'AIzaSyDGUj-frLFa_pp5Jer5IKWUfRv1tQ-mrJI'  # 구글 API KEY
+=======
+key = ''  # 구글 API KEY
+>>>>>>> 3da96042024c2355bcfc990a7de2ea5fd204b124
 
 
 # ----------------모두 사용하는 함수 모아놓은 곳----------------
