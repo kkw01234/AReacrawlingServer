@@ -102,8 +102,6 @@ def dining_code_crawling(place_id, last):
             now = datetime.datetime.now()
             date = datetime.datetime.strptime(date, '%m월 %d일')
             date = str(now.year) + '-' + date.strftime('%m-%d')
-
-
         if datetime.datetime.strptime(date, "%Y-%m-%d").date() > last:
             db.rest_dining_code.insert_one(restaurant_common.data_format(place_id, r_name, r_addr, r_lat, r_lng, name, comment, rate, date, place_id))
     if find:

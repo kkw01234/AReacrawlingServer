@@ -4,6 +4,7 @@ import requests
 import time
 import pymongo
 from bs4 import BeautifulSoup
+import datetime
 
 # ------------------하이퍼 파라미터---------------------------
 id = 'sohwakhang_studio'  # 인스타그램 아이디
@@ -45,13 +46,13 @@ def data_format(place_id,keyword, addr, lat, lng, name, comment, date):
         'name': name,
         'comment': comment,
         'date': date,
+        'rate': -1,
         'location': ''
-
     }
 
 
 # --------------------인스타그램 크롤링----------------------
-def instagram_crawling(keyword):
+def instagram_crawling(keyword, last):
     global id, password, driver_path, server_ip
 
     conn = pymongo.MongoClient(server_ip, 27017)
@@ -104,7 +105,7 @@ def instagram_crawling(keyword):
                     name = driver.find_element_by_class_name('nJAzx').text
                     comment = driver.find_element_by_class_name('PpGvg').find_element_by_tag_name('span').text
                     date = driver.find_element_by_class_name('_1o9PC').text
-                    db.instagram.insert_one(data_format(place_id,keyword, addr, lat, lng, name, comment, date))
+                    db.instagram.insert_one(data_format(place_id, keyword, addr, lat, lng, name, comment, date))
                 except NoSuchElementException:
                     pass
                 try:
@@ -117,3 +118,5 @@ def instagram_crawling(keyword):
 
 
 # ------------------ 테스트 부분 ----------------------------
+if __name__=='__main__':
+    instagram_crawling('생고기제작소 경기대점', datetime.datetime.now().replace(year=1950,month=1,day=1).date())

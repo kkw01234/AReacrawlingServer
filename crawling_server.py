@@ -96,7 +96,6 @@ def restaurant_crawling():
     return jsonify({'result': place_id + ' finish crawling'})
 
 
-
 def last_crawling(keyword):
     conn = pymysql.connect(host='118.220.3.71', user='root', password='rjsdnrkkw4809!!', db='area', charset='utf8')
     curs = conn.cursor()

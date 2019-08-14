@@ -55,13 +55,13 @@ def mango_plate_crawling(place_id, last):
     global driver_path, server_ip
     conn = pymongo.MongoClient(server_ip, 27017)
     db = conn.crawling
-
-    driver = webdriver.Chrome(driver_path)
-    driver.implicitly_wait(3)
     r_name, r_addr, r_lat, r_lng = restaurant_common.get_r_info(place_id)
     count = get_location(r_name, r_lat, r_lng)
     if count == -1:
         return
+    driver = webdriver.Chrome(driver_path)
+    driver.implicitly_wait(3)
+
     driver.get('https://www.mangoplate.com/search/' + r_name)  # 첫 팝업창 끄기
     driver.get('https://www.mangoplate.com/search/' + r_name)  # 첫 팝업창 끄기
     time.sleep(3)

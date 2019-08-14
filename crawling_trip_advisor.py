@@ -8,7 +8,7 @@ import pymongo
 from bs4 import BeautifulSoup
 
 # ------------------하이퍼 파라미터---------------------------
-local = '강남'  # 검색 지역 단어
+local = '경기대'  # 검색 지역 단어
 driver_path = 'C:/Users/gny32/OneDrive/바탕 화면/chromedriver'  # 크롬드라이버 위치
 key = 'AIzaSyDGUj-frLFa_pp5Jer5IKWUfRv1tQ-mrJI'  # 구글 API KEY
 server_ip = '118.220.3.71'  # 몽고 DB 서버 IP address

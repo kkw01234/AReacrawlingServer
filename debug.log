@@ -1,0 +1,9 @@
+[0603/001831.022:ERROR:process_info.cc(359)] UncheckedAllocate
+[0603/002119.235:ERROR:filesystem_win.cc(148)] DeleteFile C:\Users\gny32\AppData\Local\Temp\scoped_dir25380_4867\Crashpad\reports\999d9890-19c9-40b7-a491-09be3e4dd6b0.dmp: 다른 프로세스가 파일을 사용 중이기 때문에 프로세스가 액세스 할 수 없습니다. (0x20)
+[0603/002119.480:ERROR:process_info.cc(359)] UncheckedAllocate
+[0603/002223.502:ERROR:filesystem_win.cc(148)] DeleteFile C:\Users\gny32\AppData\Local\Temp\scoped_dir36556_30714\Crashpad\reports\0d68623b-f3ac-400c-859c-bfa78e0f022f.dmp: 다른 프로세스가 파일을 사용 중이기 때문에 프로세스가 액세스 할 수 없습니다. (0x20)
+[0603/002223.851:ERROR:process_info.cc(359)] UncheckedAllocate
+[0603/003022.219:ERROR:process_info.cc(359)] UncheckedAllocate
+[0603/003022.251:ERROR:process_info.cc(359)] UncheckedAllocate
+[0603/003023.120:ERROR:process_info.cc(359)] UncheckedAllocate
+[0603/003023.135:ERROR:process_info.cc(359)] UncheckedAllocate
